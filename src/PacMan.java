@@ -2,10 +2,14 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.HashSet;
 import javax.swing.*;
 
-public class PacMan extends JPanel {
+public class PacMan extends JPanel implements ActionListener, KeyListener {
 
     class Block {
         int x;
@@ -16,6 +20,9 @@ public class PacMan extends JPanel {
 
         int startX;
         int startY;
+        char direction = 'U'; // U = Up, D = Down, L = Left, R = Right
+        int velocityX = 0;
+        int velocityY = 0;
 
         Block(Image image, int x, int y, int width, int height) {
             this.image = image;
@@ -25,6 +32,34 @@ public class PacMan extends JPanel {
             this.height = height;
             this.startX = x;
             this.startY = y;
+        }
+
+        void updateDirection(char direction) {
+            this.direction = direction;
+            updateVelocity();
+        }
+
+        void updateVelocity() {
+            switch (this.direction) {
+                case 'U':
+                    this.velocityX = 0;
+                    this.velocityY = -tileSize / 4;
+                    break;
+                case 'D':
+                    this.velocityX = 0;
+                    this.velocityY = tileSize / 4;
+                    break;
+                case 'L':
+                    this.velocityX = -tileSize / 4;
+                    this.velocityY = 0;
+                    break;
+                case 'R':
+                    this.velocityX = tileSize / 4;
+                    this.velocityY = 0;
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
@@ -76,9 +111,13 @@ public class PacMan extends JPanel {
     HashSet<Block> ghosts;
     Block pacman;
 
+    Timer gameLoop;
+
     public PacMan() {
         setPreferredSize(new Dimension(boardWidth, boardHeight));
         setBackground(Color.BLACK);
+        addKeyListener(this);
+        setFocusable(true);
 
         wallImage = new ImageIcon(getClass().getResource("./wall.png")).getImage();
         blueGhostImage = new ImageIcon(getClass().getResource("./blueGhost.png")).getImage();
@@ -92,6 +131,8 @@ public class PacMan extends JPanel {
         pacmanRightImage = new ImageIcon(getClass().getResource("./pacmanRight.png")).getImage();
 
         loadMap();
+        gameLoop = new Timer(50, this);
+        gameLoop.start();
     }
 
     public void loadMap() {
@@ -168,10 +209,50 @@ public class PacMan extends JPanel {
         for (Block wall : walls) {
             g.drawImage(wall.image, wall.x, wall.y, wall.width, wall.height, null);
         }
-    
+
         g.setColor(Color.WHITE);
         for (Block food : foods) {
             g.fillRect(food.x, food.y, food.width, food.height);
+        }
+    }
+
+    public void move() {
+        pacman.x += pacman.velocityX;
+        pacman.y += pacman.velocityY;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        move();
+        repaint();
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+        // System.out.println("KeyEvent: " + e.getKeyCode());
+        switch (e.getKeyCode()) {
+            case KeyEvent.VK_UP:
+                pacman.updateDirection('U');
+                break;
+            case KeyEvent.VK_DOWN:
+                pacman.updateDirection('D');
+                break;
+            case KeyEvent.VK_LEFT:
+                pacman.updateDirection('L');
+                break;
+            case KeyEvent.VK_RIGHT:
+                pacman.updateDirection('R');
+                break;
+            default:
+                break;
         }
     }
 }
