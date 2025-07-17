@@ -35,8 +35,19 @@ public class PacMan extends JPanel implements ActionListener, KeyListener {
         }
 
         void updateDirection(char direction) {
+            char prevDirection = this.direction;
             this.direction = direction;
             updateVelocity();
+            this.x += this.velocityX;
+            this.y += this.velocityY;
+            for (Block wall : walls) {
+                if (collision(this, wall)) {
+                    this.x -= this.velocityX;
+                    this.y -= this.velocityY;
+                    this.direction = prevDirection; // Revert to previous direction
+                    updateVelocity(); // Update velocity based on reverted direction
+                }
+            }
         }
 
         void updateVelocity() {
@@ -219,6 +230,20 @@ public class PacMan extends JPanel implements ActionListener, KeyListener {
     public void move() {
         pacman.x += pacman.velocityX;
         pacman.y += pacman.velocityY;
+
+        for (Block wall : walls) {
+            if (collision(pacman, wall)) {
+                // Collision with wall, revert position
+                pacman.x -= pacman.velocityX;
+                pacman.y -= pacman.velocityY;
+                break; // Stop checking further walls
+            }
+        }
+    }
+
+    public boolean collision(Block a, Block b) {
+        return a.x < b.x + b.width && a.x + a.width > b.x &&
+                a.y < b.y + b.height && a.y + a.height > b.y;
     }
 
     @Override
