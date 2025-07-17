@@ -1,5 +1,6 @@
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.Image;
 import java.util.HashSet;
 import javax.swing.*;
@@ -112,34 +113,30 @@ public class PacMan extends JPanel {
                         Block wall = new Block(wallImage, x, y, tileSize, tileSize);
                         walls.add(wall);
                         break;
-                    case 'b':
-                        {
-                            // Blue ghost
-                            Block ghost = new Block(blueGhostImage, x, y, tileSize, tileSize);
-                            ghosts.add(ghost);
-                            break;
-                        }
-                    case 'o':
-                        {
-                            // Orange ghost
-                            Block ghost = new Block(orangeGhostImage, x, y, tileSize, tileSize);
-                            ghosts.add(ghost);
-                            break;
-                        }
-                    case 'p':
-                        {
-                            // Pink ghost
-                            Block ghost = new Block(pinkGhostImage, x, y, tileSize, tileSize);
-                            ghosts.add(ghost);
-                            break;
-                        }
-                    case 'r':
-                        {
-                            // Red ghost
-                            Block ghost = new Block(redGhostImage, x, y, tileSize, tileSize);
-                            ghosts.add(ghost);
-                            break;
-                        }
+                    case 'b': {
+                        // Blue ghost
+                        Block ghost = new Block(blueGhostImage, x, y, tileSize, tileSize);
+                        ghosts.add(ghost);
+                        break;
+                    }
+                    case 'o': {
+                        // Orange ghost
+                        Block ghost = new Block(orangeGhostImage, x, y, tileSize, tileSize);
+                        ghosts.add(ghost);
+                        break;
+                    }
+                    case 'p': {
+                        // Pink ghost
+                        Block ghost = new Block(pinkGhostImage, x, y, tileSize, tileSize);
+                        ghosts.add(ghost);
+                        break;
+                    }
+                    case 'r': {
+                        // Red ghost
+                        Block ghost = new Block(redGhostImage, x, y, tileSize, tileSize);
+                        ghosts.add(ghost);
+                        break;
+                    }
                     case ' ':
                         // Food
                         Block food = new Block(null, x + 14, y + 14, 4, 4); // Food has no image
@@ -153,6 +150,28 @@ public class PacMan extends JPanel {
                         break;
                 }
             }
+        }
+    }
+
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        draw(g);
+    }
+
+    public void draw(Graphics g) {
+        g.drawImage(pacman.image, pacman.x, pacman.y, pacman.width, pacman.height, null);
+
+        for (Block ghost : ghosts) {
+            g.drawImage(ghost.image, ghost.x, ghost.y, ghost.width, ghost.height, null);
+        }
+
+        for (Block wall : walls) {
+            g.drawImage(wall.image, wall.x, wall.y, wall.width, wall.height, null);
+        }
+    
+        g.setColor(Color.WHITE);
+        for (Block food : foods) {
+            g.fillRect(food.x, food.y, food.width, food.height);
         }
     }
 }
